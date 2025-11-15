@@ -67,6 +67,12 @@ class SystemMonitor:
 
 if __name__ == "__main__":
     # Configuration - UPDATE THIS URL FOR YOUR SERVER
+<<<<<<< HEAD
     SERVER_URL = "http://192.168.1.100:5000"  # Change to your server IP
     MONITOR = SystemMonitor(SERVER_URL)
     MONITOR.run(interval=60)  # Report every 60 seconds
+=======
+    SERVER_URL = "http://192.168.168.137:5000"  # Change to your server IP
+    MONITOR = SystemMonitor(SERVER_URL)
+    MONITOR.run(interval=60)  # Report every 60 seconds
+>>>>>>> master
