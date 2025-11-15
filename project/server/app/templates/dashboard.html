@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Dashboard - Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00d4ff;
+            --primary-dark: #0099cc;
+            --secondary: #6c63ff;
+            --dark: #0a0e17;
+            --dark-light: #1a2332;
+            --gray: #8b949e;
+            --success: #00ff88;
+            --warning: #ffaa00;
+            --danger: #ff375f;
+            --text: #e6edf3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--dark) 0%, #121927 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .admin-info {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .time-display {
+            font-size: 1.2rem;
+            color: var(--gray);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logout-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .systems-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .system-card {
+            background: linear-gradient(145deg, var(--dark-light) 0%, rgba(26, 35, 50, 0.8) 100%);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .system-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+        }
+
+        .system-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .system-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .system-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .status-online {
+            color: var(--success);
+        }
+
+        .status-offline {
+            color: var(--danger);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .dot-online {
+            background: var(--success);
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        .dot-offline {
+            background: var(--danger);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .metric-value {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+
+        .cpu-progress { background: linear-gradient(to right, var(--success), var(--primary)); }
+        .ram-progress { background: linear-gradient(to right, var(--warning), #ff6b00); }
+        .disk-progress { background: linear-gradient(to right, var(--secondary), #a855f7); }
+
+        .system-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--gray);
+            border: 1px solid var(--gray);
+        }
+
+        .last-updated {
+            font-size: 0.8rem;
+            color: var(--gray);
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--gray);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            color: var(--gray);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .systems-overview {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animation for online status */
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .online-pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-server"></i>
+                </div>
+                <div class="logo-text">SYSTEM MONITORING DASHBOARD</div>
+            </div>
+            <div class="admin-info">
+                <div class="time-display">
+                    <span id="current-time">Loading...</span>
+                </div>
+                <a href="{{ url_for('main.logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+
+        <div class="systems-overview" id="systems-container">
+            {% if systems %}
+                {% for system in systems %}
+                <div class="system-card" data-client-id="{{ system.client_id }}">
+                    <div class="system-header">
+                        <div class="system-name">
+                            <i class="fas fa-desktop"></i> {{ system.hostname }}
+                        </div>
+                        <div class="system-status">
+                            <span class="status-dot dot-online online-pulse"></span>
+                            <span class="status-online">Online</span>
+                        </div>
+                    </div>
+                    
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <span class="metric-label">CPU</span>
+                            <span class="metric-value">{{ "%.1f"|format(system.cpu) }}%</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill cpu-progress" style="width: {{ system.cpu }}%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="metric-item">
+                            <span class="metric-label">RAM</span>
+                            <span class="metric-value">{{ "%.1f"|format(system.ram) }}%</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill ram-progress" style="width: {{ system.ram }}%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="metric-item">
+                            <span class="metric-label">Disk</span>
+                            <span class="metric-value">{{ "%.1f"|format(system.disk) }}%</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill disk-progress" style="width: {{ system.disk }}%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="metric-item">
+                            <span class="metric-label">Processes</span>
+                            <span class="metric-value">{{ system.processes }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="system-details">
+                        <div class="metric-item">
+                            <span class="metric-label">Network ↓/↑</span>
+                            <span class="metric-value">{{ system.download }} / {{ system.upload }} MB/s</span>
+                        </div>
+                        
+                        <div class="metric-item">
+                            <span class="metric-label">Uptime</span>
+                            <span class="metric-value">{{ system.uptime }}</span>
+                        </div>
+                        
+                        {% if system.battery_percent %}
+                        <div class="metric-item">
+                            <span class="metric-label">Battery</span>
+                            <span class="metric-value">{{ "%.0f"|format(system.battery_percent) }}% ({{ system.plugged_state }})</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="last-updated">
+                        Last updated: <span class="update-time">{{ system.timestamp.strftime('%H:%M:%S') }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-desktop"></i>
+                    <h3>No Systems Connected</h3>
+                    <p>Waiting for client systems to report their status...</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="footer">
+            System Monitoring Dashboard | Admin Panel | Monitoring <span id="system-count">{{ systems|length }}</span> systems
+        </div>
+    </div>
+
+    <script>
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('current-time').textContent = now.toLocaleString();
+        }
+        
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Auto-refresh dashboard data
+        function refreshDashboard() {
+            fetch(window.location.href, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                // Create a temporary element to parse the new HTML
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                
+                // Extract the systems container from the new HTML
+                const newContainer = tempDiv.querySelector('#systems-container');
+                if (newContainer) {
+                    // Replace the current systems container
+                    document.getElementById('systems-container').innerHTML = newContainer.innerHTML;
+                    
+                    // Update system count
+                    const systemCount = document.querySelectorAll('.system-card').length;
+                    document.getElementById('system-count').textContent = systemCount;
+                    
+                    console.log(`Dashboard updated at ${new Date().toLocaleTimeString()}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error refreshing dashboard:', error);
+            });
+        }
+
+        // Refresh every 10 seconds
+        setInterval(refreshDashboard, 10000);
+
+        // Add click handlers for system cards (for future detail views)
+        document.addEventListener('click', function(e) {
+            const systemCard = e.target.closest('.system-card');
+            if (systemCard) {
+                const clientId = systemCard.getAttribute('data-client-id');
+                // For future implementation: show detailed view for this system
+                console.log('Selected system:', clientId);
+            }
+        });
+    </script>
+</body>
+</html>
